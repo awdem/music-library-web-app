@@ -10,16 +10,18 @@ describe Application do
   # class so our tests work.
   let(:app) { Application.new }
 
-  context "POST /albums/create-album" do
+  context 'GET /albums' do
     it 'gets a list of all albums' do
-      response = get('/albums')
+    response = get('/albums')
 
-      album_list = 'Surfer Rosa, Waterloo, Super Trouper, Bossanova, Lover, Folklore, I Put a Spell on You, Baltimore, Here Comes the Sun, Fodder on My Wings, Ring Ring'
+    album_list = 'Surfer Rosa, Waterloo, Super Trouper, Bossanova, Lover, Folklore, I Put a Spell on You, Baltimore, Here Comes the Sun, Fodder on My Wings, Ring Ring'
 
-      expect(response.status).to eq(200)
-      expect(response.body).to eq(album_list)
+    expect(response.status).to eq(200)
+    expect(response.body).to eq(album_list)
     end
-
+  end
+  
+  context "POST /albums/create-album" do
     it 'creates a new album record in the database' do
       response = post('/albums/create-album', title: "Little Girl Blue", release_year: 1959, artist_id: 4)
 
@@ -29,6 +31,33 @@ describe Application do
       response = get('/albums')
 
       expect(response.body).to include("Little Girl Blue")
+    end
+
+    # these tests don't reset the database so any test after this will have Little Girl Blue as part of the albums table
+  end
+
+  context 'GET /artists' do
+    it 'gets a list of artist' do
+      response = get('/artists')
+
+      artist_list = 'Pixies, ABBA, Taylor Swift, Nina Simone, Kiasmos'
+
+      expect(response.status).to eq(200)
+      expect(response.body).to eq(artist_list)
+    end
+  end
+
+  context 'POST /artists' do
+    it 'creates a new artist in the database' do
+      response = post('/artists', name: 'The Flaming Lips', genre: 'Alternative Rock')
+
+      expect(response.status).to eq(200)
+      expect(response.body).to eq("")
+
+      response = get('/artists')
+
+      expect(response.body).to include('The Flaming Lips')
+          # these tests don't reset the database so any test after this will have The Flaming Lips as part of the artists table
     end
   end
 
