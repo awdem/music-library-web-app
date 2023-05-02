@@ -1,5 +1,5 @@
 # Request:
-POST /albums
+POST /albums/create-album
 
 # With body parameters:
 title=Voyage
@@ -13,7 +13,7 @@ artist_id=2
 1. Design the route signature
 
 Method: POST
-Path: /albums
+Path: /albums/create-album
 body_params: title, release_year, artist_id
 
 2. design the response
