@@ -10,4 +10,6 @@ describe Application do
   # class so our tests work.
   let(:app) { Application.new }
 
+  
+
 end
