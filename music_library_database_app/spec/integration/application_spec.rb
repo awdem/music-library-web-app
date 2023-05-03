@@ -10,6 +10,11 @@ describe Application do
   # class so our tests work.
   let(:app) { Application.new }
 
+  before(:each) do
+    reset_tables
+  end
+
+
   context "GET /albums" do
     it "returns a list of albums as an HTML page" do
       response = get('/albums')
@@ -60,7 +65,7 @@ describe Application do
     it 'gets a list of artist' do
       response = get('/artists')
 
-      artist_list = 'Pixies, ABBA, Taylor Swift, Nina Simone, Kiasmos'
+      artist_list = 'Pixies, ABBA, Taylor Swift, Nina Simone'
 
       expect(response.status).to eq(200)
       expect(response.body).to eq(artist_list)
