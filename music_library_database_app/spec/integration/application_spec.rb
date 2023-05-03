@@ -14,7 +14,6 @@ describe Application do
     reset_tables
   end
 
-
   context "GET /albums" do
     it "returns a list of albums as an HTML page" do
       response = get('/albums')
