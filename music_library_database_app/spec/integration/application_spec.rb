@@ -2,11 +2,10 @@ require "spec_helper"
 require "rack/test"
 require_relative '../../app'
 
-# Test-drive and implement the following change to the music_library_database_app project:
-
-# The page returned by GET /albums should contain a link for each album listed. It should link to /albums/:id, where :id is the corresponding album's id.
-
-# Run the server and make sure you can navigate, using your browser, from the albums list page to the single album page.
+# Test-drive a route GET /artists/:id which returns an HTML page showing details for a single artist.
+# Test-drive a route GET /artists which returns an HTML page with the list of artists. 
+#  This page should contain a link for each artist listed, 
+#  linking to /artists/:id where :id needs to be the corresponding artist id.
 
 describe Application do
   # This is so we can use rack-test helper methods.
@@ -25,8 +24,8 @@ describe Application do
       response = get('/albums')
 
       expect(response.status).to eq(200)
-      expect(response.body).to include("<a href=\"/albums/1\"> 1. Doolittle <a>")
-      expect(response.body).to include("<a href=\"/albums/12\"> 12. Ring Ring <a>")
+      expect(response.body).to include("<a href=\"/albums/1\"> 1. Doolittle </a>")
+      expect(response.body).to include("<a href=\"/albums/12\"> 12. Ring Ring </a>")
     end
   end
 
@@ -56,13 +55,23 @@ describe Application do
   end
 
   context 'GET /artists' do
-    it 'gets a list of artist' do
+    it 'gets an html page with a links to artists' do
       response = get('/artists')
 
-      artist_list = 'Pixies, ABBA, Taylor Swift, Nina Simone'
+      expect(response.status).to eq(200)
+      expect(response.body).to include("<a href=\"/artists/1\"> 1. Pixies </a>")
+      expect(response.body).to include("<a href=\"/artists/4\"> 4. Nina Simone </a>")
+
+    end
+  end
+
+  context 'GET /artists/:id' do
+    it 'returns html page with the first artists details' do
+      response = get('/artists/1')
 
       expect(response.status).to eq(200)
-      expect(response.body).to eq(artist_list)
+      expect(response.body).to include("<h1> Pixies </h1>")
+      expect(response.body).to include("<p> Genre: Rock </p>") 
     end
   end
 
@@ -76,8 +85,6 @@ describe Application do
       response = get('/artists')
 
       expect(response.body).to include('The Flaming Lips')
-          # these tests don't reset the database so any test after this will have The Flaming Lips as part of the artists table
     end
   end
-
 end
