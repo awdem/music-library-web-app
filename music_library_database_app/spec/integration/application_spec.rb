@@ -2,6 +2,12 @@ require "spec_helper"
 require "rack/test"
 require_relative '../../app'
 
+# Test-drive and implement the following change to the music_library_database_app project:
+
+# The page returned by GET /albums should contain a link for each album listed. It should link to /albums/:id, where :id is the corresponding album's id.
+
+# Run the server and make sure you can navigate, using your browser, from the albums list page to the single album page.
+
 describe Application do
   # This is so we can use rack-test helper methods.
   include Rack::Test::Methods
@@ -15,14 +21,15 @@ describe Application do
   end
 
   context "GET /albums" do
-    it "returns a list of albums as an HTML page" do
+    it "returns a list of links to albums as an HTML page" do
       response = get('/albums')
 
       expect(response.status).to eq(200)
-      expect(response.body).to include('<div> Title: Surfer Rosa Released: 1988 </div>')
-      expect(response.body).to include('<div> Title: Ring Ring Released: 1973 </div>')
+      expect(response.body).to include("<a href=\"/albums/1\"> 1. Doolittle <a>")
+      expect(response.body).to include("<a href=\"/albums/12\"> 12. Ring Ring <a>")
     end
   end
+
 
   context "GET /albums/:id" do
     it "returns the first albums information" do
@@ -34,16 +41,6 @@ describe Application do
 
     
   end
-
-  context "GET /albums" do
-    it "returns a list of albums as an HTML page" do
-      response = get('/albums')
-
-      expect(response.status).to eq(200)
-      expect(response.body).to include('<div> Title: Surfer Rosa Released: 1988 </div>')
-      expect(response.body).to include('<div> Title: Ring Ring Released: 1973 </div>')
-    end
-  end
   
   context "POST /albums/create-album" do
     it 'creates a new album record in the database' do
@@ -52,12 +49,10 @@ describe Application do
       expect(response.status).to eq(200)
       expect(response.body).to eq("")
 
-      response = get('/albums')
+      response = get('/albums/13')
 
       expect(response.body).to include("Little Girl Blue")
     end
-
-    # these tests don't reset the database so any test after this will have Little Girl Blue as part of the albums table
   end
 
   context 'GET /artists' do
