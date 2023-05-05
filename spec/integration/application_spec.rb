@@ -2,11 +2,6 @@ require "spec_helper"
 require "rack/test"
 require_relative '../../app'
 
-# Test-drive a route GET /artists/:id which returns an HTML page showing details for a single artist.
-# Test-drive a route GET /artists which returns an HTML page with the list of artists. 
-#  This page should contain a link for each artist listed, 
-#  linking to /artists/:id where :id needs to be the corresponding artist id.
-
 describe Application do
   # This is so we can use rack-test helper methods.
   include Rack::Test::Methods
@@ -29,6 +24,20 @@ describe Application do
     end
   end
 
+  context "GET /albums/new" do
+    it 'returns an html form to create a new album in the database'do
+      response = get('/albums/new')
+
+      expect(response.status).to eq(200)
+      expect(response.body).to include("<h1> Add an Album </h1>")
+
+      expect(response.body).to include("<form method=\"POST\" action=\"/albums/create-album\">")
+      expect(response.body).to include("<input type=\"text\" name=\"title\">")
+      expect(response.body).to include("<input type=\"text\" name=\"release_year\">")
+      expect(response.body).to include("<input type=\"text\" name=\"artist_id\">")
+
+    end
+  end
 
   context "GET /albums/:id" do
     it "returns the first albums information" do
@@ -42,43 +51,43 @@ describe Application do
   end
   
   context "POST /albums/create-album" do
-    it 'creates a new album record in the database' do
-      response = post('/albums/create-album', title: "Little Girl Blue", release_year: 1959, artist_id: 4)
+    it 'creates a new album record in the database and return html confirmation' do
+      response = post('/albums/create-album', title: "Little Girl Blue", release_year: "1959", artist_id: "4")
 
       expect(response.status).to eq(200)
-      expect(response.body).to eq("")
+      expect(response.body).to eq("<h1> You created a new Album: Little Girl Blue</h>")
 
-      response = get('/albums/13')
+      response = get('/albums')
 
       expect(response.body).to include("Little Girl Blue")
     end
 
     xit 'returns 400 if release year is or artist id are not digits' do
       response = post('/albums/create-album', title: "Little Girl Blue", release_year: "nineteen fifty nine", artist_id: "four")
-
+    
       expect(response.status).to eq(400)      
     end
-
+    
     xit 'returns 400 if title is not a string' do
       response = post('/albums/create-album', title: 404, release_year: 1959, artist_id: 4)
-
+    
       expect(response.status).to eq(400)         
     end
-
+    
     xit 'returns 400 if there is empty input' do
       response = post('/albums/create-album', title: nil, release_year: nil, artist_id: nil)
-
+    
       expect(response.status).to eq(400)      
       
       response = get('/albums/13')
-
+    
       expect(response.body).to include("&lt;h1&gt; injection &lt;h1&gt")
-
+    
     end
-
+    
     it 'escapes html characters' do
       response = post('/albums/create-album', title: "<h1> injection </h1>", release_year: 1959, artist_id: 4)
-
+    
       expect(response.status).to eq(200)          
     end
   end
@@ -104,16 +113,32 @@ describe Application do
     end
   end
 
-  context 'POST /artists' do
-    it 'creates a new artist in the database' do
-      response = post('/artists', name: 'The Flaming Lips', genre: 'Alternative Rock')
+  context 'GET /artists/new' do
+    it 'returns an html page with a form to create a new artist in the database' do
+      response = get("/artists/new")
 
       expect(response.status).to eq(200)
-      expect(response.body).to eq("")
+
+      expect(response.body).to include("<form method=\"POST\" action=\"/artists/create-artist\">")
+      expect(response.body).to include("<input type=\"text\" name=\"name\">")
+      expect(response.body).to include("<input type=\"text\" name=\"genre\">")
+    end
+  end
+
+  context 'POST /artists/create-artist' do
+    it 'creates a new artist in the database and returns an html confirmation' do
+      response = post('/artists/create-artist', name: 'The Flaming Lips', genre: 'Alternative Rock')
+
+      expect(response.status).to eq(200)
+
+      expect(response.body).to eq("<h1> Artist Created: The Flaming Lips </h1>")
 
       response = get('/artists')
 
       expect(response.body).to include('The Flaming Lips')
     end
   end
+
 end
+
+
