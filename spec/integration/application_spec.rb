@@ -52,6 +52,35 @@ describe Application do
 
       expect(response.body).to include("Little Girl Blue")
     end
+
+    xit 'returns 400 if release year is or artist id are not digits' do
+      response = post('/albums/create-album', title: "Little Girl Blue", release_year: "nineteen fifty nine", artist_id: "four")
+
+      expect(response.status).to eq(400)      
+    end
+
+    xit 'returns 400 if title is not a string' do
+      response = post('/albums/create-album', title: 404, release_year: 1959, artist_id: 4)
+
+      expect(response.status).to eq(400)         
+    end
+
+    xit 'returns 400 if there is empty input' do
+      response = post('/albums/create-album', title: nil, release_year: nil, artist_id: nil)
+
+      expect(response.status).to eq(400)      
+      
+      response = get('/albums/13')
+
+      expect(response.body).to include("&lt;h1&gt; injection &lt;h1&gt")
+
+    end
+
+    it 'escapes html characters' do
+      response = post('/albums/create-album', title: "<h1> injection </h1>", release_year: 1959, artist_id: 4)
+
+      expect(response.status).to eq(200)          
+    end
   end
 
   context 'GET /artists' do
